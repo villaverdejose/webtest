@@ -1,8 +1,8 @@
 #INSTAL·LACIÓ programari bàsic
-sudo apt install postgresql
-sudo apt install tomcat11
-sudo apt install apache2
-sudo apt install maven
+sudo apt install -y postgresql
+sudo apt install -y tomcat11
+sudo apt install -y apache2
+sudo apt install -y maven
 
 if ! command -v java &> /dev/null || ! command -v javac &> /dev/null; then
     echo "Java o Javac no s'han trobat. Instal·lant Java 25..."
