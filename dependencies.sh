@@ -6,11 +6,14 @@ sudo apt install -y maven
 
 if ! command -v java &> /dev/null || ! command -v javac &> /dev/null; then
     echo "Java o Javac no s'han trobat. Instal·lant Java 25..."
-    sudo apt update && sudo apt install -y openjdk-25-jdk
+    sudo apt update && sudo apt install -y openjdk-25-jdk openjdk-25-jdk-headless
 else
     echo "Java ja està instal·lat:"
     java -version
 fi
+
+#SETEJAR password usuario postgres
+sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
 
 #CREAR la base de dades i afegir dades
 sudo -u postgres psql -U postgres -f ./db/startup.sql
