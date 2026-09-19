@@ -1,7 +1,16 @@
+#INSTAL·LACIÓ programari bàsic
 sudo apt install postgresql
 sudo apt install tomcat11
 sudo apt install apache2
 sudo apt install maven
+
+if ! command -v java &> /dev/null || ! command -v javac &> /dev/null; then
+    echo "Java o Javac no s'han trobat. Instal·lant Java 25..."
+    sudo apt update && sudo apt install -y openjdk-25-jdk
+else
+    echo "Java ja està instal·lat:"
+    java -version
+fi
 
 #CREAR la base de dades i afegir dades
 sudo -u postgres psql -U postgres -f ./db/startup.sql
