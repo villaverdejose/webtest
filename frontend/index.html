@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Clientes - Frontend (Apache)</title>
+    <style>
+        body { font-family: sans-serif; max-width: 700px; margin: 40px auto; padding: 0 16px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+        th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+        th { background: #f2f2f2; }
+        #estado { color: #b00; margin-top: 12px; }
+        button { padding: 6px 14px; cursor: pointer; }
+        code { background: #eee; padding: 2px 6px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>Listado de clientes</h1>
+    <p>Esta página se sirve desde <strong>Apache</strong> y consulta datos de un backend
+       corriendo en <strong>Tomcat</strong> (host y puerto distintos).</p>
+
+    <button onclick="cargarClientes()">Recargar</button>
+    <div id="estado"></div>
+    <table id="tabla" style="display:none">
+        <thead>
+            <tr><th>ID</th><th>Nombre</th></tr>
+        </thead>
+        <tbody id="cuerpo"></tbody>
+    </table>
+
+    <script>
+        // ============================================================
+        // ¡AJUSTA ESTO! Debe apuntar al Tomcat donde está desplegado
+        // el backend.war, incluyendo el nombre del contexto (backend).
+        //
+        // Ejemplos:
+        //   Mismo equipo, Tomcat en el puerto por defecto:
+        //     const BACKEND_URL = 'http://localhost:8080/backend';
+        //   Backend en otra máquina de la red:
+        //     const BACKEND_URL = 'http://192.168.1.50:8080/backend';
+        // ============================================================
+        const BACKEND_URL = 'http://localhost:8080/backend';
+
+        async function cargarClientes() {
+            const estado = document.getElementById('estado');
+            const tabla = document.getElementById('tabla');
+            const cuerpo = document.getElementById('cuerpo');
+
+            estado.textContent = 'Cargando desde ' + BACKEND_URL + ' ...';
+            tabla.style.display = 'none';
+            cuerpo.innerHTML = '';
+
+            try {
+                const respuesta = await fetch(BACKEND_URL + '/api/clientes');
+
+                if (!respuesta.ok) {
+                    const err = await respuesta.json().catch(() => ({}));
+                    throw new Error(err.error || `Error HTTP ${respuesta.status}`);
+                }
+
+                const clientes = await respuesta.json();
+
+                if (clientes.length === 0) {
+                    estado.textContent = 'No hay clientes registrados.';
+                    return;
+                }
+
+                clientes.forEach(c => {
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `<td>${c.id}</td><td>${c.nombre}</td>`;
+                    cuerpo.appendChild(fila);
+                });
+
+                estado.textContent = '';
+                tabla.style.display = 'table';
+
+            } catch (e) {
+                estado.textContent = 'Error al conectar con el backend (' + BACKEND_URL + '): ' + e.message;
+            }
+        }
+
+        cargarClientes();
+    </script>
+</body>
+</html>
